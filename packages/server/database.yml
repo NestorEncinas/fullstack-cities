@@ -1,0 +1,23 @@
+version: "3.1"
+
+services:
+  db:
+    image: mysql
+    command: --default-authentication-plugin=mysql_native_password
+    restart: always
+    ports:
+      - 13306:3306
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+
+  # redis:
+  #   image: sameersbn/redis:4.0.9-3
+  #   ports:
+  #     - "6379:6379"
+  #   restart: always
+
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8080:8080
