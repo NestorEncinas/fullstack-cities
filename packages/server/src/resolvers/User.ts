@@ -25,7 +25,7 @@ export class UserResolver {
 
   @Authorized()
   @Query(() => User)
-  async me(@Ctx() { user }: MyContext): Promise<User> {
+  async me(@Ctx() { user }: MyContext): Promise<User | undefined> {
     console.log("AM I HERE?", user);
 
     return this.userRepository.findOne(user.id);
@@ -71,7 +71,7 @@ export class UserResolver {
 
     return jsonwebtoken.sign(
       { id: user.id, email: user.email },
-      process.env.JWT_SECRET,
+      process.env.JWT_SECRET!,
       { expiresIn: "1y" }
     );
   }
@@ -98,14 +98,14 @@ export class UserResolver {
   async login(
     @Arg("email") email: string,
     @Arg("password") password: string,
-    @Ctx() ctx: MyContext
+    @Ctx() { user }: MyContext
   ): Promise<User> {
     // moment
     const date = new Date();
-    const user = await this.userRepository.findOne({
+    const dbUser = await this.userRepository.findOne({
       where: { email }
     });
-    const hashedPassword = await bcrypt.compare(password, user.password);
+    const hashedPassword = await bcrypt.compare(password, user!.password);
 
     if (!user && !hashedPassword) {
       throw new Error("Invalid password.");

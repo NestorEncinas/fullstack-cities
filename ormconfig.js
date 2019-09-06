@@ -1,7 +1,8 @@
 require("dotenv").config();
-import { ConnectionOptions } from "typeorm";
 
-const config: ConnectionOptions = {
+const isProduction = process.env.NODE_ENV === "production";
+
+const config = {
   type: "mysql",
   host: process.env.HOST,
   port: Number(process.env.PORT),
@@ -10,12 +11,12 @@ const config: ConnectionOptions = {
   database: process.env.database,
   synchronize: true,
   logging: false,
-  entities: ["./src/entity/*.ts"],
-  migrations: ["./src/migrations/*.ts"],
+  entities: [isProduction ? "build/entity/*.js" : "src/entity/*.ts"],
+  migrations: [isProduction ? "build/migrations/*.js" : "src/migrations/*.ts"],
   cli: {
     entitiesDir: "./src/entity",
     migrationsDir: "./src/migrations"
   }
 };
 
-export = config;
+module.exports = config;

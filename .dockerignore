@@ -1,0 +1,6 @@
+*
+!./package.json
+!./packages/server/package.json
+!./packages/server/build
+!./ormconfig.js
+!./packages/server/.env
