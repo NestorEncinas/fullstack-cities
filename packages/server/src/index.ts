@@ -2,12 +2,17 @@ import "reflect-metadata";
 import express, { Request } from "express";
 import cors from "cors";
 import { ApolloServer } from "apollo-server-express";
-import { createConnection, getRepository, useContainer } from "typeorm";
+import {
+  createConnection,
+  getRepository,
+  useContainer,
+  getConnectionOptions
+} from "typeorm";
 import cookieParser from "cookie-parser";
 import jwt from "jwt-simple";
 
 import UserResolver from "./resolvers/User";
-import config from "../ormconfig";
+
 import { buildSchema } from "type-graphql";
 import User from "./entity/User";
 
@@ -17,7 +22,7 @@ import { GraphQLSchema } from "graphql";
 
 const bootstrap = async () => {
   useContainer(Container);
-  await createConnection(config);
+  await createConnection(await getConnectionOptions());
 
   let schema: any = createSchema();
   // const schema = await buildSchema({
@@ -46,6 +51,7 @@ const bootstrap = async () => {
         res.status(401).send("Unauthorized");
       }
 
+      //@ts-ignore
       let decoded = jwt.decode(token, process.env.JWT_SECRET);
 
       const { id } = decoded;
