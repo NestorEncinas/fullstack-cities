@@ -4,17 +4,19 @@ import _get from "lodash/get";
 import cookie from "js-cookie";
 import { Form, Icon, Button } from "antd";
 import { Link } from "react-router-dom";
+
 import CustomInputField from "../../components/InputField/index";
 
-import { REGISTER_VALIDATION_SCHEMA } from "./validation";
+import { LOGIN_VALIDATION_SCHEMA } from "./validation";
+import { formErrors } from "utils/formErrors";
 
 type TFormValues = {
   email: string;
   password: string;
 };
 
-interface IRegisterFormProps {
-  register: (values: TFormValues) => Promise<any>;
+interface ILoginFormProps {
+  login: (values: TFormValues) => Promise<any>;
   history: any;
 }
 
@@ -23,24 +25,29 @@ interface IRegisterFormProps {
 // container -> connector -> view
 // controller -> connector -> view
 
-const RegisterFormik: React.FC<IRegisterFormProps> = ({
-  register,
-  history
-}) => {
+const RegisterFormik: React.FC<ILoginFormProps> = ({ login, history }) => {
   return (
     <>
       <Formik
-        validationSchema={REGISTER_VALIDATION_SCHEMA}
+        validationSchema={LOGIN_VALIDATION_SCHEMA}
         validateOnChange={false}
         initialValues={{ email: "", password: "" }}
         onSubmit={async (values, { setSubmitting }) => {
           setSubmitting(true);
           try {
-            const loginResponse = await register(values);
-            console.log("LoginResponse =>", loginResponse);
+            const loginResponse = await login(values);
+            console.log("Where are the errors? =>", loginResponse);
             const accessToken = _get(loginResponse, ["data", "register"]);
 
             console.log("AAAA", accessToken);
+
+            // how to display errors on form?
+            // [{path: 'email': message: 'invalid....'}]
+            // {email: invalid}
+            if (loginResponse) {
+              // FIXME: check if im working
+              return formErrors(loginResponse);
+            }
 
             if (accessToken) {
               cookie.set("accessToken", accessToken, { expires: 1 });
@@ -129,12 +136,12 @@ const RegisterFormik: React.FC<IRegisterFormProps> = ({
                   className="login-form-button"
                   disabled={isSubmitting}
                 >
-                  Register
+                  Login
                 </Button>
                 <button type="submit">Submit </button>
               </Form.Item>
               <Form.Item>
-                Or <Link to="/login">Sign in</Link>
+                Or <Link to="/register">Sign up</Link>
               </Form.Item>
             </div>
           </form>

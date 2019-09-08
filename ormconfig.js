@@ -1,7 +1,7 @@
 require("dotenv").config();
 
 const isProduction = process.env.NODE_ENV === "production";
-
+console.log(process.env.DB_USER);
 const config = {
   type: "mysql",
   host: process.env.HOST,

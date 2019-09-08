@@ -63,11 +63,7 @@ export class UserResolver {
       })
     );
 
-    // }).save();
-    // const user = await this.userRepository.create({
-    //   email,
-    //   password: await bcrypt.hash(password, 10)
-    // }).save();
+    // need to handle duplicte entry and throw error
 
     return jsonwebtoken.sign(
       { id: user.id, email: user.email },

@@ -12,6 +12,7 @@ import obtainAuthToken from "libs/withAuth";
 import { UserContext } from "context/UserContext";
 
 import getUserDataFromAccessToken from "libs/getUserDataFromAccessToken";
+import LoginIndex from "modules/login/graphql";
 
 const RouteIndex: React.FC = () => {
   const [session, setSession] = React.useState(obtainAuthToken());
@@ -32,6 +33,7 @@ const RouteIndex: React.FC = () => {
           <Switch>
             <Route exact path="/" component={Home} />
             <Route path="/register" component={RegisterIndex} />
+            <Route path="/login" component={LoginIndex} />
             <Route path="/tete" component={TestAuth} />
             {/* protected routes only for log in users */}
             <PrivateRoute path="/protected" component={Tete} />
