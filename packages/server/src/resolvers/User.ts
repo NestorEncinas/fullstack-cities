@@ -79,25 +79,31 @@ export class UserResolver {
     );
   }
 
-  @Mutation(() => User)
+  @Mutation(() => String)
   async login(
     @Arg("email") email: string,
-    @Arg("password") password: string,
-    @Ctx() { user }: MyContext
-  ): Promise<User> {
-    // moment
-    const date = new Date();
+    @Arg("password") password: string
+  ): Promise<string | undefined> {
     const dbUser = await this.userRepository.findOne({
       where: { email }
     });
-    const hashedPassword = await bcrypt.compare(password, user!.password);
 
-    if (!user && !hashedPassword) {
+    if (!dbUser) {
+      throw new Error("Invalid login.");
+    }
+
+    const hashedPassword = await bcrypt.compare(password, dbUser!.password);
+
+    if (!dbUser && !hashedPassword) {
       throw new Error("Invalid password.");
     }
     // return encoded jwt
 
-    return user;
+    return jsonwebtoken.sign(
+      { id: dbUser.id, email: dbUser.email },
+      process.env.JWT_SECRET!,
+      { expiresIn: "1y" }
+    );
   }
 }
 
