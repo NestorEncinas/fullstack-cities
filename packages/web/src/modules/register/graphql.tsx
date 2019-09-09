@@ -25,13 +25,19 @@ const RegisterIndex: React.SFC<FUCK_HISTORY> = ({ history }) => {
    * https://www.apollographql.com/docs/react/api/react-hooks/
    */
 
-  const [register] = useMutation(REGISTER_MUTATION);
-
+  const [register, { error }] = useMutation(REGISTER_MUTATION);
+  // console.log("TETE", error);
+  // if (error) {
+  //   error.graphQLErrors.map(({ message }, i) => {
+  //     alert(message);
+  //   });
+  // }
   return (
     <>
       <RegisterFormik
         history={history}
         register={values => register({ variables: { registerInput: values } })}
+        errors={error}
       />
     </>
   );

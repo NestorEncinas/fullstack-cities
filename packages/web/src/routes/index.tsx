@@ -14,17 +14,20 @@ import { UserContext } from "context/UserContext";
 import getUserDataFromAccessToken from "libs/getUserDataFromAccessToken";
 import LoginIndex from "modules/login/graphql";
 
+export type TUserData = {
+  id: number;
+  email: string;
+};
+
 const RouteIndex: React.FC = () => {
-  const [session, setSession] = React.useState(obtainAuthToken());
-  const [user, setUser] = React.useState(getUserDataFromAccessToken());
+  const [session, setSession] = React.useState<string | null>(null);
+  const [user, setUser] = React.useState<TUserData | null>(null);
 
   React.useEffect(() => {
     setSession(obtainAuthToken());
     setUser(getUserDataFromAccessToken());
   }, [session]);
 
-  console.log("User after effect", user);
-  console.log("Session after effect", session);
   return (
     // FIX ME:  do I need Session?
     <SessionContext.Provider value={session}>

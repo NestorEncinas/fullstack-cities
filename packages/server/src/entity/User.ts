@@ -7,6 +7,7 @@ import {
   JoinColumn
 } from "typeorm";
 import { ObjectType, Field, ID } from "type-graphql";
+import { IsEmail } from "class-validator";
 
 import Photo from "./Photo";
 
@@ -24,7 +25,8 @@ class User {
   // name: string;
 
   @Field()
-  @Column({ unique: true })
+  @Column("varchar", { unique: true, length: 255 })
+  @IsEmail()
   email: string;
 
   @Column("text")

@@ -12,7 +12,7 @@ import cookieParser from "cookie-parser";
 import jwt from "jwt-simple";
 
 import UserResolver from "./resolvers/User";
-
+// const config = require("../../../ormconfig");
 import { buildSchema } from "type-graphql";
 import User from "./entity/User";
 
@@ -22,9 +22,11 @@ import { GraphQLSchema } from "graphql";
 
 const bootstrap = async () => {
   useContainer(Container);
-  await createConnection(await getConnectionOptions());
 
-  let schema: any = createSchema();
+  await createConnection(await getConnectionOptions());
+  // await createConnection();
+
+  let schema: any = createSchema(Container);
   // const schema = await buildSchema({
   //   resolvers: [UserResolver],
   //   container: Container,

@@ -6,7 +6,11 @@ import { Form, Icon, Button } from "antd";
 import { Link } from "react-router-dom";
 import CustomInputField from "../../components/InputField/index";
 
+// import { formErrors } from "utils/formErrors";
+
 import { REGISTER_VALIDATION_SCHEMA } from "./validation";
+import { ApolloError } from "apollo-client";
+import { formErrors } from "../../utils/formErrors";
 
 type TFormValues = {
   email: string;
@@ -16,6 +20,7 @@ type TFormValues = {
 interface IRegisterFormProps {
   register: (values: TFormValues) => Promise<any>;
   history: any;
+  errors?: ApolloError | any;
 }
 
 // register connector
@@ -25,7 +30,8 @@ interface IRegisterFormProps {
 
 const RegisterFormik: React.FC<IRegisterFormProps> = ({
   register,
-  history
+  history,
+  errors
 }) => {
   return (
     <>
@@ -33,21 +39,27 @@ const RegisterFormik: React.FC<IRegisterFormProps> = ({
         validationSchema={REGISTER_VALIDATION_SCHEMA}
         validateOnChange={false}
         initialValues={{ email: "", password: "" }}
-        onSubmit={async (values, { setSubmitting }) => {
+        onSubmit={async (values, { setSubmitting, setErrors }) => {
           setSubmitting(true);
           try {
             const loginResponse = await register(values);
-            console.log("LoginResponse =>", loginResponse);
-            const accessToken = _get(loginResponse, ["data", "register"]);
 
-            console.log("AAAA", accessToken);
+            const accessToken = _get(loginResponse, ["data", "register"]);
 
             if (accessToken) {
               cookie.set("accessToken", accessToken, { expires: 1 });
               history.push("/tete");
             }
           } catch (error) {
-            console.error(error);
+            // TODO : move me - graphql errors to utils
+            const validationErrors = _get(error, [
+              "graphQLErrors",
+              "0",
+              "extensions",
+              "exception",
+              "validationErrors"
+            ]);
+            setErrors(formErrors(validationErrors));
           } finally {
             setSubmitting(false);
           }
@@ -63,7 +75,7 @@ const RegisterFormik: React.FC<IRegisterFormProps> = ({
         }) => (
           <form onSubmit={handleSubmit} style={{ display: "flex" }}>
             <div style={{ width: 400, margin: "auto" }}>
-              {/* name, type, placeholder, value */}
+              {/* name, type, placeh older, value */}
               <CustomInputField
                 name="email"
                 placeHolder="Email"

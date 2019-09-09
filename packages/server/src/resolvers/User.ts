@@ -56,6 +56,15 @@ export class UserResolver {
     email,
     password
   }: RegisterInput) {
+    // nodemailer - check confirmation email & change JWT to log in
+    const userAlreadyExists = await this.userRepository.findOne({
+      where: { email }
+    });
+
+    if (userAlreadyExists) {
+      throw new Error("User already registered");
+    }
+
     const user = await this.userRepository.save(
       await this.userRepository.create({
         email,
@@ -63,33 +72,13 @@ export class UserResolver {
       })
     );
 
-    // need to handle duplicte entry and throw error
-
     return jsonwebtoken.sign(
       { id: user.id, email: user.email },
       process.env.JWT_SECRET!,
       { expiresIn: "1y" }
     );
   }
-  // @Mutation(() => User)
-  // async register(@Arg("registerInput")
-  // {
-  //   name,
-  //   email,
-  //   password
-  // }: RegisterInput): Promise<User> {
-  //   const hashedPassword = await bcrypt.hash(password, 12);
 
-  //   const user = await User.create({
-  //     name,
-  //     email,
-  //     password: hashedPassword
-  //   }).save();
-
-  //   return user;
-  // }
-
-  // express ioredis cookie session
   @Mutation(() => User)
   async login(
     @Arg("email") email: string,
