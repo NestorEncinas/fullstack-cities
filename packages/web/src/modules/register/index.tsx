@@ -10,7 +10,7 @@ import CustomInputField from "../../components/InputField/index";
 
 import { REGISTER_VALIDATION_SCHEMA } from "./validation";
 import { ApolloError } from "apollo-client";
-import { formErrors } from "../../utils/formErrors";
+// import { formErrors } from "../../utils/formErrors";
 
 type TFormValues = {
   email: string;
@@ -52,14 +52,16 @@ const RegisterFormik: React.FC<IRegisterFormProps> = ({
             }
           } catch (error) {
             // TODO : move me - graphql errors to utils
-            const validationErrors = _get(error, [
-              "graphQLErrors",
-              "0",
-              "extensions",
-              "exception",
-              "validationErrors"
-            ]);
-            setErrors(formErrors(validationErrors));
+            // const validationErrors = _get(error, [
+            //   "graphQLErrors",
+            //   "0",
+            //   "extensions",
+            //   "exception",
+            //   "validationErrors"
+            // ]);
+            // if (validationErrors) {
+            //   setErrors(formErrors(validationErrors));
+            // }
           } finally {
             setSubmitting(false);
           }

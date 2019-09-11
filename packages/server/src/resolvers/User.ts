@@ -10,6 +10,8 @@ import { Resolver, Query, Arg, Mutation, Ctx, Authorized } from "type-graphql";
 import RegisterInput from "../inputs/user";
 
 import { MyContext } from "../types/myContext";
+import { sendEmail } from "../utils/sendEmail";
+import createConfirmEmail from "../utils/createConfirmEmailLink";
 
 @Resolver(User)
 export class UserResolver {
@@ -50,33 +52,40 @@ export class UserResolver {
    * That will be used on FE to keep session and block certain
    * parts of the application when the user is not logged in
    */
-  @Mutation(() => String)
+  @Mutation(() => Boolean)
   async register(@Arg("registerInput")
   {
     email,
     password
   }: RegisterInput) {
-    // nodemailer - check confirmation email & change JWT to log in
     const userAlreadyExists = await this.userRepository.findOne({
       where: { email }
     });
 
     if (userAlreadyExists) {
-      throw new Error("User already registered");
+      throw new Error("User already registered.");
     }
+
+    // create emailLinkSecret will use to compare on confirmationLink that is the same
+    const emailLinkSecret = Math.random()
+      .toString(36)
+      .substring(2);
 
     const user = await this.userRepository.save(
       await this.userRepository.create({
         email,
+        emailLinkSecret,
         password: await bcrypt.hash(password, 10)
       })
     );
 
-    return jsonwebtoken.sign(
-      { id: user.id, email: user.email },
-      process.env.JWT_SECRET!,
-      { expiresIn: "1y" }
+    // TODO: create hash for confirmation link and look how @Get mutation works
+    await sendEmail(
+      email,
+      await createConfirmEmail("http://localhost:4000", user)
     );
+
+    return true;
   }
 
   @Mutation(() => String)
