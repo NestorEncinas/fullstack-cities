@@ -7,6 +7,7 @@ import {
   JoinColumn
 } from "typeorm";
 import { ObjectType, Field, ID } from "type-graphql";
+import { IsEmail } from "class-validator";
 
 import Photo from "./Photo";
 
@@ -19,22 +20,23 @@ class User {
   @PrimaryGeneratedColumn()
   id: number;
 
-  // @Field()
-  // @Column()
-  // name: string;
-
   @Field()
-  @Column({ unique: true })
+  @Column("varchar", { unique: true, length: 255 })
+  @IsEmail()
   email: string;
 
   @Column("text")
   password: string;
 
-  // relation to Photo, where one user has one photo
-  // TODO: test me after auth is done
-  // @OneToOne(type => Photo, { cascade: true, lazy: true })
-  // @JoinColumn()
-  // photo: Lazy<Photo>;
+  // field to check if user has confirmed the register email
+  @Field()
+  @Column({ default: false })
+  confirmed: boolean;
+
+  // hash to validate confirmationEmailLink
+  @Field()
+  @Column({ nullable: false })
+  emailLinkSecret: string;
 }
 
 export default User;

@@ -10,6 +10,8 @@ import { Resolver, Query, Arg, Mutation, Ctx, Authorized } from "type-graphql";
 import RegisterInput from "../inputs/user";
 
 import { MyContext } from "../types/myContext";
+import { sendEmail } from "../utils/sendEmail";
+import createConfirmEmail from "../utils/createConfirmEmailLink";
 
 @Resolver(User)
 export class UserResolver {
@@ -50,69 +52,67 @@ export class UserResolver {
    * That will be used on FE to keep session and block certain
    * parts of the application when the user is not logged in
    */
-  @Mutation(() => String)
+  @Mutation(() => Boolean)
   async register(@Arg("registerInput")
   {
     email,
     password
   }: RegisterInput) {
+    const userAlreadyExists = await this.userRepository.findOne({
+      where: { email }
+    });
+
+    if (userAlreadyExists) {
+      throw new Error("User already registered.");
+    }
+
+    // create emailLinkSecret will use to compare on confirmationLink that is the same
+    const emailLinkSecret = Math.random()
+      .toString(36)
+      .substring(2);
+
     const user = await this.userRepository.save(
       await this.userRepository.create({
         email,
+        emailLinkSecret,
         password: await bcrypt.hash(password, 10)
       })
     );
 
-    // }).save();
-    // const user = await this.userRepository.create({
-    //   email,
-    //   password: await bcrypt.hash(password, 10)
-    // }).save();
-
-    return jsonwebtoken.sign(
-      { id: user.id, email: user.email },
-      process.env.JWT_SECRET!,
-      { expiresIn: "1y" }
+    // TODO: create hash for confirmation link and look how @Get mutation works
+    await sendEmail(
+      email,
+      await createConfirmEmail("http://localhost:4000", user)
     );
+
+    return true;
   }
-  // @Mutation(() => User)
-  // async register(@Arg("registerInput")
-  // {
-  //   name,
-  //   email,
-  //   password
-  // }: RegisterInput): Promise<User> {
-  //   const hashedPassword = await bcrypt.hash(password, 12);
 
-  //   const user = await User.create({
-  //     name,
-  //     email,
-  //     password: hashedPassword
-  //   }).save();
-
-  //   return user;
-  // }
-
-  // express ioredis cookie session
-  @Mutation(() => User)
+  @Mutation(() => String)
   async login(
     @Arg("email") email: string,
-    @Arg("password") password: string,
-    @Ctx() { user }: MyContext
-  ): Promise<User> {
-    // moment
-    const date = new Date();
+    @Arg("password") password: string
+  ): Promise<string | undefined> {
     const dbUser = await this.userRepository.findOne({
       where: { email }
     });
-    const hashedPassword = await bcrypt.compare(password, user!.password);
 
-    if (!user && !hashedPassword) {
+    if (!dbUser) {
+      throw new Error("Invalid login.");
+    }
+
+    const hashedPassword = await bcrypt.compare(password, dbUser!.password);
+
+    if (!dbUser && !hashedPassword) {
       throw new Error("Invalid password.");
     }
     // return encoded jwt
 
-    return user;
+    return jsonwebtoken.sign(
+      { id: dbUser.id, email: dbUser.email },
+      process.env.JWT_SECRET!,
+      { expiresIn: "1y" }
+    );
   }
 }
 

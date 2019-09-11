@@ -2,7 +2,7 @@ import gql from "graphql-tag";
 import React from "react";
 import { useQuery } from "react-apollo";
 import { NextFC } from "next";
-import { SessionContext } from "context/SessionContext";
+// import { SessionContext } from "context/SessionContext";
 
 import { RouteComponentProps } from "react-router";
 import { UserContext } from "context/UserContext";
@@ -21,10 +21,10 @@ const TEST_AUTH_ME = gql`
 `;
 
 const TestAuth: NextFC<FUCK_HISTORY> = ({ history }: any) => {
-  const session = React.useContext(SessionContext);
+  // const session = React.useContext(SessionContext);
   const user = React.useContext(UserContext);
   console.log(user);
-  if (session === undefined) {
+  if (user === null) {
     history.push("/login");
   }
   const { loading, error, data } = useQuery(TEST_AUTH_ME);

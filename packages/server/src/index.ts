@@ -1,5 +1,5 @@
 import "reflect-metadata";
-import express, { Request } from "express";
+import express from "express";
 import cors from "cors";
 import { ApolloServer } from "apollo-server-express";
 import {
@@ -10,21 +10,21 @@ import {
 } from "typeorm";
 import cookieParser from "cookie-parser";
 import jwt from "jwt-simple";
-
-import UserResolver from "./resolvers/User";
-
-import { buildSchema } from "type-graphql";
-import User from "./entity/User";
-
+import { useExpressServer } from "routing-controllers";
 import { Container } from "typedi";
+
+import User from "./entity/User";
+import { ConfirmationEmailController } from "./controllers/ConfirmationEmailController";
+
 import { createSchema } from "./utils";
-import { GraphQLSchema } from "graphql";
 
 const bootstrap = async () => {
   useContainer(Container);
-  await createConnection(await getConnectionOptions());
 
-  let schema: any = createSchema();
+  await createConnection(await getConnectionOptions());
+  // await createConnection();
+
+  let schema: any = createSchema(Container);
   // const schema = await buildSchema({
   //   resolvers: [UserResolver],
   //   container: Container,
@@ -69,6 +69,10 @@ const bootstrap = async () => {
   });
 
   const app = express();
+  // routing-controllers with express
+  useExpressServer(app, {
+    controllers: [ConfirmationEmailController]
+  });
   app.use(cors());
   app.use(cookieParser());
 
