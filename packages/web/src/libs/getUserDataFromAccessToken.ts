@@ -3,17 +3,19 @@ import jwt from "jwt-simple";
 import _pick from "lodash/pick";
 
 const getUserDataFromAccessToken = () => {
-  const accessToken = Cookies.get("accessToken");
+  const idToken = Cookies.get("idToken");
 
-  if (!accessToken) return null;
+  if (!idToken) return null;
 
   try {
     const decodedUser = jwt.decode(
-      accessToken,
+      idToken,
       process.env.REACT_APP_JWT_SECRET || ""
     );
 
-    return _pick(decodedUser, ["id", "email"]);
+    console.log("Decoded user", _pick(decodedUser, ["id"]));
+
+    return _pick(decodedUser, ["id"]);
   } catch (error) {
     // TODO: check ant design snackbar
     console.error("JWT errror", error);

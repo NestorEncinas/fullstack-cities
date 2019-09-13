@@ -23,7 +23,7 @@ const TEST_AUTH_ME = gql`
 const TestAuth: NextFC<FUCK_HISTORY> = ({ history }: any) => {
   // const session = React.useContext(SessionContext);
   const user = React.useContext(UserContext);
-  console.log(user);
+  console.log("TETE user => ", user);
   if (user === null) {
     history.push("/login");
   }

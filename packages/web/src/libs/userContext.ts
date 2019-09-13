@@ -1,10 +1,11 @@
-import React from "react";
+import { createContext } from "react";
 
 export type TUserData = {
   id: number;
-  email: string;
+  // email: string;
 };
 
-const UserContext = React.createContext<TUserData | null>(null);
+// export const UserContext = createContext<TUserData | null>(null);
+export const UserContext = createContext<any>(null);
 
-export default UserContext.Provider;
+// export default UserContext.Provider;
