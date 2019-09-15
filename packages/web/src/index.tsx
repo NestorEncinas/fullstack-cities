@@ -1,21 +1,15 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import { ApolloProvider } from "react-apollo";
 
 import "./index.css";
 
+import App from "App";
+
 import * as serviceWorker from "./serviceWorker";
-import client from "./configureApollo";
 
-import RouteIndex from "routes";
-
-require("dotenv").config();
-
-const App = () => (
-  <ApolloProvider client={client}>
-    <RouteIndex />
-  </ApolloProvider>
-);
+/**
+ * Render The init page of application App.tsx
+ */
 ReactDOM.render(<App />, document.getElementById("root"));
 
 // If you want your app to work offline and load faster, you can change

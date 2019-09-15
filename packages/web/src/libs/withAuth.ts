@@ -5,8 +5,8 @@ import Cookies from "js-cookie";
 const obtainAuthToken = () => {
   const idToken = Cookies.get("idToken");
   // should add it to context when i get more experience
-  // const user = getUserDataFromAccessToken(accessToken);
-  console.log("LIB OBTAINAUTHTOKEN", idToken);
+
+  // console.log("LIB OBTAINAUTHTOKEN", idToken);
   if (!idToken) {
     return null;
   }

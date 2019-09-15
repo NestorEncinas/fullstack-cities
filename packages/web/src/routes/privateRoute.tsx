@@ -1,7 +1,8 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Route, Redirect } from "react-router-dom";
 
-import { SessionContext } from "../context/SessionContext";
+import { UserContext } from "context/userContext";
+import getUserDataFromAccessToken from "libs/getUserDataFromAccessToken";
 
 interface IPrivateRoute {
   component: any;
@@ -12,15 +13,18 @@ const PrivateRoute: React.FC<IPrivateRoute> = ({
   component: Component,
   ...rest
 }) => {
-  const session = React.useContext(SessionContext);
-  console.log("adadadasdad", session);
-
+  const { user }: any = React.useContext(UserContext);
+  console.log("adadadasdad", user);
+  useEffect(() => {
+    const user = getUserDataFromAccessToken();
+    console.log("App use effect, set User", user);
+  }, []);
   return (
     <>
       <Route
         {...rest}
         render={props =>
-          session ? (
+          user ? (
             <Component {...props} />
           ) : (
             <Redirect

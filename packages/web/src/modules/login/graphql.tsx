@@ -6,7 +6,7 @@ import LoginFormik from "./index";
 
 import { RouteComponentProps } from "react-router";
 
-interface FUCK_HISTORY extends RouteComponentProps {}
+export interface FUCK_HISTORY extends RouteComponentProps {}
 
 const LOGIN_MUTATION = gql`
   mutation login($email: String!, $password: String!) {

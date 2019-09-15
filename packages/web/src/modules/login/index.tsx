@@ -9,9 +9,12 @@ import { Link } from "react-router-dom";
 import CustomInputField from "../../components/InputField/index";
 
 import { LOGIN_VALIDATION_SCHEMA } from "./validation";
-// import { formErrors } from "utils/formErrors";
-import { UserContext } from "../../context/UserContext";
+import { UserContext } from "context/userContext";
 import getUserDataFromAccessToken from "libs/getUserDataFromAccessToken";
+
+// import { formErrors } from "utils/formErrors";
+// import { UserContext } from "../../context/UserContext";
+// import getUserDataFromAccessToken from "libs/getUserDataFromAccessToken";
 
 type TFormValues = {
   email: string;
@@ -29,8 +32,8 @@ interface ILoginFormProps {
 // controller -> connector -> view
 
 const LoginFormik: React.FC<ILoginFormProps> = ({ login, history }) => {
-  const { user, setUser } = useContext(UserContext);
-
+  const { setUser }: any = useContext(UserContext);
+  // console.log("user login", user);
   return (
     <>
       <Formik
@@ -48,14 +51,11 @@ const LoginFormik: React.FC<ILoginFormProps> = ({ login, history }) => {
               ["data", "login"],
               []
             );
-            const user = getUserDataFromAccessToken();
-            setUser(user);
             /**
              * If login response from backend well good so we
              * So we can set cookies for tokens and redirect to index page
              */
             if (idToken && refreshToken) {
-              console.log("WHY?");
               let now = new Date();
               now.setTime(now.getTime() + 2 * 60 * 1000);
               cookie.set("idToken", idToken, {
@@ -64,9 +64,12 @@ const LoginFormik: React.FC<ILoginFormProps> = ({ login, history }) => {
               cookie.set("refreshToken", refreshToken, {
                 expires: 1
               });
-              history.push("/tete");
+              setUser(getUserDataFromAccessToken());
+              // history.push("/tete");
             }
-
+            // const user = getUserDataFromAccessToken();
+            // setUser(user);
+            history.push("/tete");
             // how to display errors on form?
             // [{path: 'email': message: 'invalid....'}]
             // {email: invalid}
@@ -99,11 +102,11 @@ const LoginFormik: React.FC<ILoginFormProps> = ({ login, history }) => {
                   <Icon type="user" style={{ color: "rgba(0,0,0,.25)" }} />
                 }
               />
-              <Form.Item>
+              {/* <Form.Item>
                 <a className="login-form-forgot" href="">
                   Forgot password
                 </a>
-              </Form.Item>
+              </Form.Item> */}
               <Form.Item>
                 <Button
                   type="primary"
@@ -116,7 +119,7 @@ const LoginFormik: React.FC<ILoginFormProps> = ({ login, history }) => {
                 <button type="submit">Submit </button>
               </Form.Item>
               <Form.Item>
-                Or <Link to="/register">Sign up</Link>
+                Or <Link to="/">Sign up</Link>
               </Form.Item>
             </div>
           </form>

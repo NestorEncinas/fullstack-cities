@@ -136,11 +136,11 @@ const RegisterFormik: React.FC<IRegisterFormProps> = ({
                 />
               </Form.Item> */}
 
-              <Form.Item>
+              {/* <Form.Item>
                 <a className="login-form-forgot" href="">
                   Forgot password
                 </a>
-              </Form.Item>
+              </Form.Item> */}
               <Form.Item>
                 <Button
                   type="primary"

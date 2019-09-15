@@ -20,8 +20,6 @@ const httpLink = createHttpLink({
 const authLink = setContext((req, { headers }) => {
   // we obtain idToken & refreshToken from cookies
   const { idToken } = Cookie.get();
-  // console.log("Auth Link R", refreshToken);
-  // console.log("Auth Link I", idToken);
 
   // expiration date of idToken > actual Time
   if (idToken) {
@@ -40,8 +38,6 @@ const authLink = setContext((req, { headers }) => {
 
 const logoutLink = setContext((_, { headers }) => {
   const { idToken, refreshToken } = Cookie.get();
-  console.log("Auth Link R", refreshToken);
-  console.log("Auth Link I", idToken);
 
   if (idToken) {
     let now = new Date();

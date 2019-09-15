@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "@apollo/react-hooks": "^3.0.0",
+    "@types/history": "^4.7.3",
     "@types/jest": "24.0.17",
     "@types/js-cookie": "^2.2.2",
     "@types/lodash": "^4.14.136",
@@ -28,6 +29,7 @@
     "lodash": "^4.17.15",
     "next-config": "^0.1.0",
     "next-cookies": "^1.1.2",
+    "next-routes": "^1.4.2",
     "react": "^16.8.6",
     "react-apollo": "^3.0.0",
     "react-dom": "^16.8.6",
