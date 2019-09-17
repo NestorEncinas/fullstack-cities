@@ -6,25 +6,25 @@ const getUserDataFromAccessToken = (): any => {
   const idToken = Cookies.get("idToken");
 
   if (!idToken) {
-    return null;
+    return false;
   }
-
   try {
     const decodedUser = jwt.decode(
       idToken,
       process.env.REACT_APP_JWT_SECRET || ""
     );
 
-    // check expiration date
+    if (decodedUser.exp < new Date().getTime() / 1000) {
+      return false;
+    }
 
-    console.log("Decoded user", _pick(decodedUser, ["id"]));
     const result = _pick(decodedUser, ["id"]);
+
     return result;
   } catch (error) {
-    // TODO: check ant design snackbar
     console.error("JWT errror", error);
 
-    return null;
+    return false;
   }
 };
 

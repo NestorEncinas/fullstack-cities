@@ -8,9 +8,6 @@ import Tete from "../modules/tete/index";
 import LoginIndex from "modules/login/graphql";
 import ConfirmationEmail from "../modules/confirmationEmail/index";
 import PrivateRoute from "./privateRoute";
-import { useContext } from "react";
-import { UserContext } from "context/userContext";
-// import NavigationTopBar from "components/Navigation/TopBar";
 
 export type TUserData = {
   user: {
@@ -19,11 +16,8 @@ export type TUserData = {
 };
 
 const RouteIndex: React.FC = () => {
-  const user = useContext(UserContext);
-  console.log("Route Index User context", user);
   return (
     <>
-      {/* <NavigationTopBar /> */}
       <BrowserRouter>
         <div>
           <nav>
@@ -43,7 +37,7 @@ const RouteIndex: React.FC = () => {
             </ul>
           </nav>
           <Switch>
-            <Route exact path="/" component={Home} />
+            <PrivateRoute exact path="/" component={Home} />
             <Route path="/register" component={RegisterIndex} />
             <Route path="/login" component={LoginIndex} />
             <Route path="/tete" component={TestAuth} />

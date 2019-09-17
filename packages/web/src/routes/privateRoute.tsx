@@ -1,31 +1,27 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { Route, Redirect } from "react-router-dom";
-
-import { UserContext } from "context/userContext";
+import _pick from "lodash/pick";
 import getUserDataFromAccessToken from "libs/getUserDataFromAccessToken";
 
 interface IPrivateRoute {
   component: any;
   path: string;
+  [key: string]: any;
 }
 
 const PrivateRoute: React.FC<IPrivateRoute> = ({
   component: Component,
   ...rest
 }) => {
-  const { user }: any = React.useContext(UserContext);
-  console.log("adadadasdad", user);
-  useEffect(() => {
-    const user = getUserDataFromAccessToken();
-    console.log("App use effect, set User", user);
-  }, []);
+  const user = getUserDataFromAccessToken();
+  console.log("User", user);
   return (
     <>
       <Route
         {...rest}
         render={props =>
           user ? (
-            <Component {...props} />
+            <Component user={user} {...props} />
           ) : (
             <Redirect
               to={{ pathname: "/login", state: { from: props.location } }}

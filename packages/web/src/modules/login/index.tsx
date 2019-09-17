@@ -1,20 +1,13 @@
-import React, { useContext } from "react";
+import React from "react";
 import { Formik } from "formik";
 import _get from "lodash/get";
 import cookie from "js-cookie";
 import { Form, Icon, Button } from "antd";
 import { Link } from "react-router-dom";
-// import moment from "moment";
 
 import CustomInputField from "../../components/InputField/index";
 
 import { LOGIN_VALIDATION_SCHEMA } from "./validation";
-import { UserContext } from "context/userContext";
-import getUserDataFromAccessToken from "libs/getUserDataFromAccessToken";
-
-// import { formErrors } from "utils/formErrors";
-// import { UserContext } from "../../context/UserContext";
-// import getUserDataFromAccessToken from "libs/getUserDataFromAccessToken";
 
 type TFormValues = {
   email: string;
@@ -32,8 +25,6 @@ interface ILoginFormProps {
 // controller -> connector -> view
 
 const LoginFormik: React.FC<ILoginFormProps> = ({ login, history }) => {
-  const { setUser }: any = useContext(UserContext);
-  // console.log("user login", user);
   return (
     <>
       <Formik
@@ -64,7 +55,7 @@ const LoginFormik: React.FC<ILoginFormProps> = ({ login, history }) => {
               cookie.set("refreshToken", refreshToken, {
                 expires: 1
               });
-              setUser(getUserDataFromAccessToken());
+
               // history.push("/tete");
             }
             // const user = getUserDataFromAccessToken();
