@@ -2,23 +2,29 @@ import Cookies from "js-cookie";
 import jwt from "jwt-simple";
 import _pick from "lodash/pick";
 
-const getUserDataFromAccessToken = () => {
-  const accessToken = Cookies.get("accessToken");
+const getUserDataFromAccessToken = (): any => {
+  const idToken = Cookies.get("idToken");
 
-  if (!accessToken) return null;
-
+  if (!idToken) {
+    return false;
+  }
   try {
     const decodedUser = jwt.decode(
-      accessToken,
+      idToken,
       process.env.REACT_APP_JWT_SECRET || ""
     );
 
-    return _pick(decodedUser, ["id", "email"]);
+    if (decodedUser.exp < new Date().getTime() / 1000) {
+      return false;
+    }
+
+    const result = _pick(decodedUser, ["id"]);
+
+    return result;
   } catch (error) {
-    // TODO: check ant design snackbar
     console.error("JWT errror", error);
 
-    return null;
+    return false;
   }
 };
 

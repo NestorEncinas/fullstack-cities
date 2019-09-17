@@ -8,7 +8,6 @@ import { Link } from "react-router-dom";
 import CustomInputField from "../../components/InputField/index";
 
 import { LOGIN_VALIDATION_SCHEMA } from "./validation";
-import { formErrors } from "utils/formErrors";
 
 type TFormValues = {
   email: string;
@@ -25,7 +24,7 @@ interface ILoginFormProps {
 // container -> connector -> view
 // controller -> connector -> view
 
-const RegisterFormik: React.FC<ILoginFormProps> = ({ login, history }) => {
+const LoginFormik: React.FC<ILoginFormProps> = ({ login, history }) => {
   return (
     <>
       <Formik
@@ -36,38 +35,46 @@ const RegisterFormik: React.FC<ILoginFormProps> = ({ login, history }) => {
           setSubmitting(true);
           try {
             const loginResponse = await login(values);
-            console.log("Where are the errors? =>", loginResponse);
-            const accessToken = _get(loginResponse, ["data", "register"]);
 
-            console.log("AAAA", accessToken);
+            // get idToken, refreshToken  from the login response
+            const { idToken, refreshToken } = _get(
+              loginResponse,
+              ["data", "login"],
+              []
+            );
+            /**
+             * If login response from backend well good so we
+             * So we can set cookies for tokens and redirect to index page
+             */
+            if (idToken && refreshToken) {
+              let now = new Date();
+              now.setTime(now.getTime() + 2 * 60 * 1000);
+              cookie.set("idToken", idToken, {
+                expires: now
+              });
+              cookie.set("refreshToken", refreshToken, {
+                expires: 1
+              });
 
+              // history.push("/tete");
+            }
+            // const user = getUserDataFromAccessToken();
+            // setUser(user);
+            history.push("/tete");
             // how to display errors on form?
             // [{path: 'email': message: 'invalid....'}]
             // {email: invalid}
-            if (loginResponse) {
-              // FIXME: check if im working
-              return formErrors(loginResponse);
-            }
-
-            if (accessToken) {
-              cookie.set("accessToken", accessToken, { expires: 1 });
-              history.push("/tete");
-            }
+            // if (loginResponse) {
+            //   // FIXME: check if im working
+            //   return formErrors(loginResponse);
+            // }
           } catch (error) {
             console.error(error);
           } finally {
             setSubmitting(false);
           }
         }}
-        render={({
-          values,
-          handleBlur,
-          handleChange,
-          handleSubmit,
-          isSubmitting,
-          touched,
-          errors
-        }) => (
+        render={({ handleSubmit, isSubmitting }) => (
           <form onSubmit={handleSubmit} style={{ display: "flex" }}>
             <div style={{ width: 400, margin: "auto" }}>
               {/* name, type, placeholder, value */}
@@ -86,49 +93,11 @@ const RegisterFormik: React.FC<ILoginFormProps> = ({ login, history }) => {
                   <Icon type="user" style={{ color: "rgba(0,0,0,.25)" }} />
                 }
               />
-              {/* <Form.Item
-                help={touched.email && errors.email ? errors.email : ""}
-                validateStatus={
-                  touched.email && errors.email ? "error" : undefined
-                }
-              >
-                <Input
-                  prefix={
-                    <Icon type="user" style={{ color: "rgba(0,0,0,.25)" }} />
-                  }
-                  placeholder="Email"
-                  type="text"
-                  name="email"
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                  value={values.email}
-                />
-              </Form.Item> */}
-              {/* <Form.Item
-                help={
-                  touched.password && errors.password ? errors.password : ""
-                }
-                validateStatus={
-                  touched.password && errors.password ? "error" : undefined
-                }
-              >
-                <Input
-                  prefix={
-                    <Icon type="user" style={{ color: "rgba(0,0,0,.25)" }} />
-                  }
-                  type="password"
-                  name="password"
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                  value={values.password}
-                />
-              </Form.Item> */}
-
-              <Form.Item>
+              {/* <Form.Item>
                 <a className="login-form-forgot" href="">
                   Forgot password
                 </a>
-              </Form.Item>
+              </Form.Item> */}
               <Form.Item>
                 <Button
                   type="primary"
@@ -141,7 +110,7 @@ const RegisterFormik: React.FC<ILoginFormProps> = ({ login, history }) => {
                 <button type="submit">Submit </button>
               </Form.Item>
               <Form.Item>
-                Or <Link to="/register">Sign up</Link>
+                Or <Link to="/">Sign up</Link>
               </Form.Item>
             </div>
           </form>
@@ -151,4 +120,4 @@ const RegisterFormik: React.FC<ILoginFormProps> = ({ login, history }) => {
   );
 };
 
-export default RegisterFormik;
+export default LoginFormik;

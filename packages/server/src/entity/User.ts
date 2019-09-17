@@ -1,15 +1,6 @@
-import {
-  Entity,
-  PrimaryGeneratedColumn,
-  Column,
-  BaseEntity,
-  OneToOne,
-  JoinColumn
-} from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column } from "typeorm";
 import { ObjectType, Field, ID } from "type-graphql";
 import { IsEmail } from "class-validator";
-
-import Photo from "./Photo";
 
 type Lazy<T extends object> = Promise<T> | T;
 
@@ -37,6 +28,13 @@ class User {
   @Field()
   @Column({ nullable: false })
   emailLinkSecret: string;
+
+  // idToken expiration date, will be null until user login to the app
+  @Field()
+  @Column("datetime", {
+    nullable: true
+  })
+  expirationDate: Date;
 }
 
 export default User;

@@ -1,7 +1,7 @@
 import React from "react";
 import { Formik } from "formik";
 import _get from "lodash/get";
-import cookie from "js-cookie";
+// import cookie from "js-cookie";
 import { Form, Icon, Button } from "antd";
 import { Link } from "react-router-dom";
 import CustomInputField from "../../components/InputField/index";
@@ -42,15 +42,20 @@ const RegisterFormik: React.FC<IRegisterFormProps> = ({
         onSubmit={async (values, { setSubmitting, setErrors }) => {
           setSubmitting(true);
           try {
-            const loginResponse = await register(values);
+            const registerResponse = await register(values);
+            console.log("Register response => ", registerResponse);
+            // const accessToken = _get(registerResponse, ["data", "register"]);
+            const response = _get(registerResponse, ["data", "register"], []);
 
-            const accessToken = _get(loginResponse, ["data", "register"]);
-
-            if (accessToken) {
-              cookie.set("accessToken", accessToken, { expires: 1 });
-              history.push("/tete");
+            if (response) {
+              history.push("/confirmation");
             }
+            // if (accessToken) {
+            //   cookie.set("accessToken", accessToken, { expires: 1 });
+            //   history.push("/tete");
+            // }
           } catch (error) {
+            console.error("Register error.");
             // TODO : move me - graphql errors to utils
             // const validationErrors = _get(error, [
             //   "graphQLErrors",
@@ -131,11 +136,11 @@ const RegisterFormik: React.FC<IRegisterFormProps> = ({
                 />
               </Form.Item> */}
 
-              <Form.Item>
+              {/* <Form.Item>
                 <a className="login-form-forgot" href="">
                   Forgot password
                 </a>
-              </Form.Item>
+              </Form.Item> */}
               <Form.Item>
                 <Button
                   type="primary"

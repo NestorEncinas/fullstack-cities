@@ -1,4 +1,12 @@
-import React from "react";
-import getUserDataFromAccessToken from "libs/getUserDataFromAccessToken";
+import { createContext } from "react";
 
-export const UserContext = React.createContext(getUserDataFromAccessToken());
+/**
+ * Type for UserData obtained from JWT cookie
+ * Think what data will need
+ */
+export type TUserData = {
+  id: number;
+  // email: string;
+};
+
+export const UserContext = createContext<TUserData | null>(null);

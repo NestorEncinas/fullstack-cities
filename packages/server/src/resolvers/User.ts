@@ -3,15 +3,37 @@ import { Repository } from "typeorm";
 import { InjectRepository } from "typeorm-typedi-extensions";
 import bcrypt from "bcryptjs";
 import jsonwebtoken from "jsonwebtoken";
+import moment from "moment";
 
 import Photo from "../entity/Photo";
 import User from "../entity/User";
-import { Resolver, Query, Arg, Mutation, Ctx, Authorized } from "type-graphql";
+import {
+  ObjectType,
+  Resolver,
+  Query,
+  Arg,
+  Mutation,
+  Ctx,
+  Authorized,
+  Field
+} from "type-graphql";
 import RegisterInput from "../inputs/user";
 
 import { MyContext } from "../types/myContext";
 import { sendEmail } from "../utils/sendEmail";
 import createConfirmEmail from "../utils/createConfirmEmailLink";
+
+@ObjectType()
+class Tokens {
+  @Field(() => String)
+  idToken: string;
+
+  @Field(() => String)
+  expirationDate: string;
+
+  @Field(() => String)
+  refreshToken: string;
+}
 
 @Resolver(User)
 export class UserResolver {
@@ -88,11 +110,11 @@ export class UserResolver {
     return true;
   }
 
-  @Mutation(() => String)
+  @Mutation(() => Tokens)
   async login(
     @Arg("email") email: string,
     @Arg("password") password: string
-  ): Promise<string | undefined> {
+  ): Promise<Tokens | undefined> {
     const dbUser = await this.userRepository.findOne({
       where: { email }
     });
@@ -106,13 +128,35 @@ export class UserResolver {
     if (!dbUser && !hashedPassword) {
       throw new Error("Invalid password.");
     }
-    // return encoded jwt
 
-    return jsonwebtoken.sign(
-      { id: dbUser.id, email: dbUser.email },
+    // access-token
+    const idToken = jsonwebtoken.sign(
+      { id: dbUser.id },
       process.env.JWT_SECRET!,
-      { expiresIn: "1y" }
+      { expiresIn: "2m" }
     );
+
+    // access-token expiration date
+    const expirationDate = moment(new Date())
+      .add("2", "m")
+      .format("YYYY-MM-DD HH:mm:ss");
+
+    const refreshToken = jsonwebtoken.sign(
+      { id: dbUser.id, email: dbUser.email },
+      process.env.JWT_REFRESH_SECRET!,
+      { expiresIn: "1d" }
+    );
+
+    await this.userRepository.save(
+      Object.assign(dbUser, { expirationDate, refreshToken })
+    );
+    // refresh-token
+
+    return {
+      idToken,
+      expirationDate,
+      refreshToken
+    };
   }
 }
 

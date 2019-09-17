@@ -1,27 +1,27 @@
 import React from "react";
 import { Route, Redirect } from "react-router-dom";
-
-import { SessionContext } from "../context/SessionContext";
+import _pick from "lodash/pick";
+import getUserDataFromAccessToken from "libs/getUserDataFromAccessToken";
 
 interface IPrivateRoute {
   component: any;
   path: string;
+  [key: string]: any;
 }
 
 const PrivateRoute: React.FC<IPrivateRoute> = ({
   component: Component,
   ...rest
 }) => {
-  const session = React.useContext(SessionContext);
-  console.log("adadadasdad", session);
-
+  const user = getUserDataFromAccessToken();
+  console.log("User", user);
   return (
     <>
       <Route
         {...rest}
         render={props =>
-          session ? (
-            <Component {...props} />
+          user ? (
+            <Component user={user} {...props} />
           ) : (
             <Redirect
               to={{ pathname: "/login", state: { from: props.location } }}

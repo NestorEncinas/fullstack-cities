@@ -6,11 +6,15 @@ import LoginFormik from "./index";
 
 import { RouteComponentProps } from "react-router";
 
-interface FUCK_HISTORY extends RouteComponentProps {}
+export interface FUCK_HISTORY extends RouteComponentProps {}
 
 const LOGIN_MUTATION = gql`
-  mutation login($email: email, $password: password!) {
-    login(email: $email, password: $password)
+  mutation login($email: String!, $password: String!) {
+    login(email: $email, password: $password) {
+      idToken
+      expirationDate
+      refreshToken
+    }
   }
 `;
 
@@ -20,7 +24,7 @@ const LoginIndex: React.FC<FUCK_HISTORY> = ({ history }) => {
   return (
     <LoginFormik
       history={history}
-      login={values => login({ variables: { registerInput: values } })}
+      login={values => login({ variables: values })}
     />
   );
 };

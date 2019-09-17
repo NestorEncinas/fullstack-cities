@@ -1,7 +1,6 @@
 import React from "react";
 import gql from "graphql-tag";
 import { useMutation } from "@apollo/react-hooks";
-import _get from "lodash/get";
 
 import RegisterFormik from "./index";
 
